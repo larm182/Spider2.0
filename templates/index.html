@@ -1,0 +1,799 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider 2.0 - Escáner de Vulnerabilidades Web</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --dark-bg: #1a1a1a;
+            --card-bg: #ffffff;
+            --text-light: #6c757d;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+
+        .main-container {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .scan-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .scan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .scan-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .scan-type-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-type-card:hover {
+            border-color: var(--secondary-color);
+            background: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .scan-type-card.selected {
+            border-color: var(--secondary-color);
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .scan-type-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .scan-type-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .scan-type-description {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .url-input-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .url-input {
+            border-radius: 50px;
+            border: 2px solid #e9ecef;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .scan-btn {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .scan-btn:hover {
+            background: linear-gradient(135deg, #2980b9, var(--secondary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(52, 152, 219, 0.4);
+        }
+
+        .scan-btn:disabled {
+            background: #6c757d;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            border: none;
+        }
+
+        .result-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .result-badge {
+            border-radius: 20px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .severity-high {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .severity-medium {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .severity-low {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .severity-info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .progress-container {
+            margin: 2rem 0;
+            display: none;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            background: #e9ecef;
+        }
+
+        .progress-bar {
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--secondary-color), #2980b9);
+            transition: width 0.3s ease;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .spinner-border {
+            color: var(--secondary-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .vulnerability-item {
+            padding: 1rem;
+            border-left: 4px solid #e9ecef;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            border-radius: 0 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .vulnerability-item:hover {
+            background: white;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .vulnerability-item.high {
+            border-left-color: var(--accent-color);
+        }
+
+        .vulnerability-item.medium {
+            border-left-color: var(--warning-color);
+        }
+
+        .vulnerability-item.low {
+            border-left-color: var(--success-color);
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            margin-top: 3rem;
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .scan-type-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand">
+                <i class="fa-solid fa-spider"></i>
+                Spider 2.0 
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Escáner</a>
+                    </li>
+                  
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">Acerca de</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container main-container" style="margin-top: 100px;">
+        <!-- Scanner Section -->
+        <div class="row justify-content-center" id="scanner">
+            <div class="col-lg-10">
+                <div class="card scan-card animate__animated animate__fadeInUp">
+                    <div class="card-header text-center">
+                        <h3><i class="fas fa-search me-2"></i>Escáner de Vulnerabilidades Web</h3>
+                        <p class="mb-0">Analiza sitios web en busca de vulnerabilidades de seguridad</p>
+                    </div>
+                    <div class="card-body">
+                        <!-- URL Input -->
+                        <div class="url-input-group">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0" style="border-radius: 50px 0 0 50px; border: 2px solid #e9ecef; border-right: none;">
+                                    <i class="fas fa-globe text-muted"></i>
+                                </span>
+                                <input type="url" class="form-control url-input border-start-0" id="targetUrl" 
+                                       placeholder="https://ejemplo.com" style="border-radius: 0 50px 50px 0;">
+                            </div>
+                        </div>
+
+                        <!-- Scan Types Selection -->
+                        <h5 class="mb-3"><i class="fas fa-cogs me-2"></i>Tipos de Escaneo</h5>
+                        <div class="scan-type-grid" id="scanTypes">
+                            <div class="scan-type-card" data-scan="ports">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div class="scan-type-title">Puertos</div>
+                                <div class="scan-type-description">Escanea puertos abiertos y servicios</div>
+                            </div>
+                            <div class="scan-type-card" data-scan="directories">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-folder-open"></i>
+                                </div>
+                                <div class="scan-type-title">Directorios</div>
+                                <div class="scan-type-description">Busca directorios y archivos ocultos</div>
+                            </div>
+                            <div class="scan-type-card" data-scan="secrets">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div class="scan-type-title">Secretos</div>
+                                <div class="scan-type-description">Detecta API keys y credenciales</div>
+                            </div>
+                            <div class="scan-type-card" data-scan="xss">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div class="scan-type-title">XSS</div>
+                                <div class="scan-type-description">Cross-Site Scripting</div>
+                            </div>
+                            <div class="scan-type-card" data-scan="sqli">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="scan-type-title">SQL Injection</div>
+                                <div class="scan-type-description">Inyección de código SQL</div>
+                            </div>
+                            <div class="scan-type-card" data-scan="cmdi">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-terminal"></i>
+                                </div>
+                                <div class="scan-type-title">Command Injection</div>
+                                <div class="scan-type-description">Inyección de comandos del sistema</div>
+                            </div>
+                            <div class="scan-type-card" data-scan="lfi">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="scan-type-title">LFI</div>
+                                <div class="scan-type-description">Local File Inclusion</div>
+                            </div>
+                            <div class="scan-type-card" data-scan="headers">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="scan-type-title">Headers</div>
+                                <div class="scan-type-description">Análisis de headers de seguridad</div>
+                            </div>
+                            <div class="scan-type-card" data-scan="tech">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <div class="scan-type-title">Tecnologías</div>
+                                <div class="scan-type-description">Detecta tecnologías utilizadas</div>
+                            </div>
+                            <div class="scan-type-card" data-scan="brute">
+                                <div class="scan-type-icon">
+                                    <i class="fas fa-unlock-alt"></i>
+                                </div>
+                                <div class="scan-type-title">Fuerza Bruta</div>
+                                <div class="scan-type-description">Ataques de fuerza bruta en login</div>
+                            </div>
+                        </div>
+
+                        <!-- Scan Button -->
+                        <div class="text-center">
+                            <button type="button" class="btn scan-btn" id="scanBtn">
+                                <i class="fas fa-play me-2"></i>
+                                Iniciar Escaneo
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="progress-container" id="progressContainer">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Progreso del escaneo</span>
+                                <span id="progressText">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Loading Spinner -->
+                        <div class="loading-spinner" id="loadingSpinner">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Escaneando...</span>
+                            </div>
+                            <p class="mt-2">Escaneando vulnerabilidades...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-container" id="resultsContainer">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="text-white mb-4"><i class="fas fa-chart-bar me-2"></i>Resultados del Escaneo</h2>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats-grid" id="statsGrid">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+
+            <!-- Detailed Results -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="result-card">
+                        <div class="result-header">
+                            <h5 class="result-title">Vulnerabilidades Encontradas</h5>
+                            <button class="btn btn-outline-primary btn-sm" id="generateReportBtn">
+                                <i class="fas fa-file-pdf me-1"></i>
+                                Generar Reporte PDF
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="vulnerabilitiesList">
+                                <!-- Vulnerabilities will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Spider 2.0. Herramienta de seguridad para profesionales.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+$(document).ready(function() {
+    let selectedScanTypes = [];
+    let currentScanResults = {};
+
+    // Manejo de selección de tipos de escaneo
+    $('.scan-type-card').click(function() {
+        const scanType = $(this).data('scan');
+
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            selectedScanTypes = selectedScanTypes.filter(type => type !== scanType);
+        } else {
+            $(this).addClass('selected');
+            selectedScanTypes.push(scanType);
+        }
+
+        $('#scanBtn').prop('disabled', selectedScanTypes.length === 0);
+    });
+
+    $('#scanBtn').click(function() {
+        const targetUrl = $('#targetUrl').val().trim();
+
+        if (!targetUrl) {
+            alert('Por favor, ingresa una URL válida');
+            return;
+        }
+
+        if (selectedScanTypes.length === 0) {
+            alert('Por favor, selecciona al menos un tipo de escaneo');
+            return;
+        }
+
+        startScan(targetUrl, selectedScanTypes);
+    });
+
+    $('#generateReportBtn').click(function() {
+        if (Object.keys(currentScanResults).length > 0) {
+            generateReport();
+        } else {
+            alert('No hay resultados para generar reporte');
+        }
+    });
+
+    function startScan(targetUrl, scanTypes) {
+        $('#scanBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Escaneando...');
+        $('#loadingSpinner').show();
+        $('#progressContainer').show();
+        $('#resultsContainer').hide();
+
+        updateProgress(0);
+
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 90) progress = 90;
+            updateProgress(progress);
+        }, 500);
+
+        const formData = new FormData();
+        formData.append('target_url', targetUrl);
+        scanTypes.forEach(type => formData.append('scan_types', type));
+
+        $.ajax({
+            url: '/scan',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                clearInterval(progressInterval);
+                updateProgress(100);
+
+                setTimeout(() => {
+                    currentScanResults = response;
+                    displayResults(response);
+
+                    $('#loadingSpinner').hide();
+                    $('#progressContainer').hide();
+                    $('#scanBtn').prop('disabled', false).html('<i class="fas fa-play me-2"></i>Iniciar Escaneo');
+                    $('#resultsContainer').show().addClass('fade-in');
+
+                    $('html, body').animate({ scrollTop: $('#resultsContainer').offset().top - 100 }, 1000);
+                }, 1000);
+            },
+            error: function(xhr, status, error) {
+                clearInterval(progressInterval);
+                alert('Error durante el escaneo: ' + error);
+                $('#loadingSpinner').hide();
+                $('#progressContainer').hide();
+                $('#scanBtn').prop('disabled', false).html('<i class="fas fa-play me-2"></i>Iniciar Escaneo');
+            }
+        });
+    }
+
+    function updateProgress(percentage) {
+        $('#progressBar').css('width', percentage + '%');
+        $('#progressText').text(Math.round(percentage) + '%');
+    }
+
+    function calculateStats(results) {
+        let stats = { total: 0, high: 0, medium: 0, low: 0 };
+
+        for (const key in results) {
+            if (results[key]?.vulnerabilities) {
+                results[key].vulnerabilities.forEach(vuln => {
+                    stats.total++;
+                    const sev = vuln.severity?.toLowerCase();
+                    if (sev === 'high') stats.high++;
+                    else if (sev === 'medium') stats.medium++;
+                    else stats.low++;
+                });
+            }
+        }
+
+        return stats;
+    }
+
+    function displayStatistics(results) {
+        const statData = calculateStats(results);
+
+        const stats = [
+            { icon: 'fas fa-bug', number: statData.total, label: 'Vulnerabilidades', color: '#e74c3c' },
+            { icon: 'fas fa-exclamation-triangle', number: statData.high, label: 'Alta Severidad', color: '#e74c3c' },
+            { icon: 'fas fa-exclamation-circle', number: statData.medium, label: 'Media Severidad', color: '#f39c12' },
+            { icon: 'fas fa-info-circle', number: statData.low, label: 'Baja Severidad', color: '#27ae60' }
+        ];
+
+        let statsHtml = '';
+        stats.forEach(stat => {
+            statsHtml += `
+                <div class="stat-card">
+                    <div class="stat-number" style="color: ${stat.color}">
+                        <i class="${stat.icon} me-2"></i>${stat.number}
+                    </div>
+                    <div class="stat-label">${stat.label}</div>
+                </div>
+            `;
+        });
+
+        $('#statsGrid').html(statsHtml);
+    }
+
+   function displayVulnerabilities(results) {
+    let vulnerabilitiesHtml = '';
+
+    if (results.status === 'success') {
+        vulnerabilitiesHtml += `
+            <div class="vulnerability-item info">
+                <h6><i class="fas fa-check-circle text-success me-2"></i>Escaneo Completado</h6>
+                <p><strong>Objetivo:</strong> ${results.target}</p>
+                <p><strong>Tipos de escaneo:</strong> ${results.scan_types.join(', ')}</p>
+            </div>
+        `;
+
+        for (const key in results) {
+            const module = results[key];
+            if (module?.vulnerabilities) {
+                module.vulnerabilities.forEach((vuln, index) => {
+                    const sev = vuln.severity?.toLowerCase() || 'low';
+                    const type = vuln.type || 'Vulnerabilidad';
+                    const evidence = vuln.evidence?.replace(/</g, '&lt;').replace(/>/g, '&gt;') || 'Sin evidencia';
+                    const payload = vuln.payload?.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;') || '';
+                    const url = vuln.url || '';
+                    const param = vuln.parameter || '';
+                    const method = vuln.method || '';
+
+                    vulnerabilitiesHtml += `
+                        <div class="vulnerability-item ${sev}">
+                            <h6><i class="fas fa-bug me-2"></i>${type}</h6>
+                            <p><strong>Severidad:</strong> <span class="badge severity-${sev}">${vuln.severity}</span></p>
+                            ${url ? `<p><strong>URL:</strong> <code>${url}</code></p>` : ''}
+                            ${param ? `<p><strong>Parámetro:</strong> <code>${param}</code></p>` : ''}
+                            ${method ? `<p><strong>Método:</strong> ${method}</p>` : ''}
+                            ${payload ? `
+                                <p><strong>Payload:</strong>
+                                    <span class="bg-light px-2 py-1 rounded d-inline-block text-danger">
+                                        ${payload}
+                                        <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('${payload}')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </span>
+                                </p>
+                            ` : ''}
+                            <p><strong>Evidencia:</strong><br><code class="text-warning">${evidence}</code></p>
+                        </div>
+                    `;
+                });
+            }
+        }
+    } else {
+        vulnerabilitiesHtml = `
+            <div class="vulnerability-item high">
+                <h6><i class="fas fa-exclamation-triangle me-2"></i>Error en el escaneo</h6>
+                <p>${results.error || 'No se pudo completar el escaneo.'}</p>
+            </div>
+        `;
+    }
+
+    $('#vulnerabilitiesList').html(vulnerabilitiesHtml);
+}
+
+
+
+
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        console.log("Payload copiado");
+    }).catch(err => {
+        console.error("Error al copiar:", err);
+    });
+}
+
+
+    function displayResults(results) {
+        displayStatistics(results);
+        displayVulnerabilities(results);
+    }
+
+    function generateReport() {
+        const reportBtn = $('#generateReportBtn');
+        const originalText = reportBtn.html();
+
+        reportBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Generando...');
+
+        $.ajax({
+            url: '/generate_report',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(currentScanResults),
+            xhrFields: { responseType: 'blob' },
+            success: function(blob) {
+                const link = document.createElement('a');
+                const url = window.URL.createObjectURL(blob);
+                link.href = url;
+                link.download = 'security_report.pdf';
+                document.body.appendChild(link);
+                link.click();
+                window.URL.revokeObjectURL(url);
+                link.remove();
+
+                reportBtn.prop('disabled', false).html(originalText);
+            },
+            error: function(err) {
+                alert('Error al generar el reporte');
+                reportBtn.prop('disabled', false).html(originalText);
+            }
+        });
+    }
+});
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider 2.0 - Acerca de Mi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --dark-bg: #1a1a1a;
+            --card-bg: #ffffff;
+            --text-light: #6c757d;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+
+        .main-container {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .scan-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .scan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .about-content {
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .feature-list {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .feature-list li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            margin-top: 3rem;
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .highlight {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fa-solid fa-spider"></i>
+                Spider 2.0 
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Escáner</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">Acerca de</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container main-container" style="margin-top: 100px;">
+        <!-- About Section -->
+        <div class="row justify-content-center" id="about">
+            <div class="col-lg-10">
+                <div class="card scan-card animate__animated animate__fadeInUp">
+                    <div class="card-header text-center">
+                        <h3><i class="fa-solid fa-address-card"></i> Acerca de Spider 2.0 Escáner de Vulnerabilidades Web</h3>
+                    </div>
+                    <div class="card-body about-content">
+                        <h4 class="section-title">🔍 Descripción</h4>
+                        <p>Spider es una herramienta de seguridad en Python diseñada para realizar análisis automatizados en sitios web. Permite detectar vulnerabilidades comunes, recopilar información del servidor y generar informes detallados en PDF con los hallazgos obtenidos.</p>
+                        <p>Esta herramienta es ideal para pentesters, profesionales de ciberseguridad y administradores de sistemas que deseen evaluar la seguridad de sus aplicaciones web de manera eficiente.</p>
+
+                        <h4 class="section-title">⚡ Características Principales</h4>
+                        <ul class="feature-list">
+                            <li><strong>✅ Enumeración de Directorios y Archivos:</strong> Busca directorios y scripts expuestos en la aplicación web.</li>
+                            <li><strong>✅ Detección de Vulnerabilidades:</strong>
+                                <ul>
+                                    <li>XSS (Cross-Site Scripting): Identifica posibles puntos de inyección de scripts maliciosos.</li>
+                                    <li>SQL Injection: Detecta vulnerabilidades de inyección SQL que podrían comprometer la base de datos.</li>
+                                    <li>Command Injection: Verifica si el servidor es vulnerable a inyecciones de comandos del sistema.</li>
+                                    <li>LFI: Verifica vulnerabilidad web que permite la lectura de archivos locales.</li>
+                                </ul>
+                            </li>
+                            <li><strong>✅ Escaneo de Puertos y Tecnologías:</strong> Obtiene información sobre los servicios y tecnologías que ejecuta el servidor.</li>
+                            <li><strong>✅ Revisión de Encabezados HTTP:</strong> Identifica configuraciones inseguras en los headers del sitio web.</li>
+                            <li><strong>✅ Fuerza Bruta y Validación de Credenciales:</strong> Pruebas básicas de acceso con diccionarios personalizados.</li>
+                            <li><strong>✅ Generación de Reportes en PDF:</strong> Se incluyen tablas detalladas, gráficas de estadísticas y una descripción clara de los hallazgos.</li>
+                        </ul>
+
+                        <h4 class="section-title">🚀 Instalación</h4>
+                        <ol class="feature-list">
+                            <li>Clona el repositorio: <span class="highlight">git clone https://github.com/larm182/Spider2.0</span></li>
+                            <li>Accede al directorio: <span class="highlight">cd Spider2.0</span></li>
+                            <li>Instala las dependencias: <span class="highlight">pip install -r requirements.txt</span></li>
+                            <li>Ejecuta la herramienta: <span class="highlight">python app.py</span></li>
+                        </ol>
+
+                        <h4 class="section-title">📊 Ejemplo de Uso</h4>
+                        <p>El usuario puede seleccionar diferentes opciones del menú interactivo, por ejemplo:</p>
+                        <div class="bg-light p-3 rounded mb-3">
+                            <p class="mb-1">1. Agregue la URL para se analizada</p>
+                            <p class="mb-1">2. Eliga la Opcion</p>
+                            <p class="mb-1">3. Resultados</p>
+                            <p class="mb-1">4. Generar PDF</p>
+                           
+                        </div>
+                        <p>Tras la ejecución, se generará un informe detallado con los resultados encontrados.</p>
+
+                        <h4 class="section-title">📄 Ejemplo de Reporte</h4>
+                        <p>El informe en PDF incluirá:</p>
+                        <ul class="feature-list">
+                            <li>Listado de vulnerabilidades encontradas.</li>
+                            <li>URLs y payloads utilizados en las pruebas.</li>
+                            <li>Tablas organizadas con la información recopilada.</li>
+                            <li>Gráficas estadísticas sobre los hallazgos.</li>
+                            <li>Recomendaciones para mitigar los riesgos.</li>
+                        </ul>
+
+                        <h4 class="section-title">📌 Requisitos</h4>
+                        <ul class="feature-list">
+                            <li>Python 3.8+</li>
+                            <li>Librerías: requests, beautifulsoup4, fpdf, matplotlib, termcolor, python-nmap, etc.</li>
+                        </ul>
+
+                        <div class="alert alert-warning mt-4">
+                            <h5 class="alert-heading">⚠️ Aviso Legal</h5>
+                            <p class="mb-0">Esta herramienta ha sido desarrollada con fines educativos y de seguridad ofensiva ética. El uso indebido en sistemas sin autorización puede ser ilegal. El autor no se hace responsable por el mal uso de esta herramienta.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Spider 2.0. Herramienta de seguridad para profesionales.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>
