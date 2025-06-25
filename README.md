@@ -6,7 +6,7 @@ Spider es una herramienta de seguridad en Python diseñada para realizar anális
 
 Esta herramienta es ideal para pentesters, profesionales de ciberseguridad y administradores de sistemas que deseen evaluar la seguridad de sus aplicaciones web de manera eficiente.
 
-#⚡ Características Principales
+# ⚡ Características Principales
 
 ✅ Enumeración de Directorios y Archivos: Busca directorios y scripts expuestos en la aplicación web.
 
